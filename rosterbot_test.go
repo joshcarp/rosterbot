@@ -2,6 +2,7 @@ package rosterbot
 
 import (
 	"github.com/slack-go/slack"
+	"net/http"
 	"testing"
 )
 
@@ -46,4 +47,10 @@ func TestSlackCommandSubscribe(t *testing.T){
 		TriggerID:      "",
 	})
 
+}
+
+func TestPublishHandler(t *testing.T){
+	http.HandleFunc("/", PublishHandler)
+
+	http.ListenAndServe(":8080", nil)
 }

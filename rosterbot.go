@@ -108,14 +108,18 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	pubsubService.Topic("slack").Publish(ctx, &pubsub.Message{
-		ID:              "",
-		Data:            nil,
+	res := pubsubService.Topic("slack").Publish(ctx, &pubsub.Message{
+		ID:              "foobar123",
+		Data:            []byte("{'content': '1234'}"),
 		Attributes:      cron.Now().Map(),
-		PublishTime:     time.Time{},
-		DeliveryAttempt: nil,
-		OrderingKey:     "",
+		PublishTime:     time.Now(),
 	})
+	for{
+		select {
+		case <-res.Ready():
+			return
+		}
+	}
 }
 
 
