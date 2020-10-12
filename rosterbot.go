@@ -55,10 +55,16 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func SlackCommandSubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
-	rosterbotCommand, _ := ParseCommand(cmd.Command)
+	rosterbotCommand, err := ParseCommand(cmd.Command)
+	if err != nil{
+		return nil, err
+	}
 	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.Command}
 	ctx := context.Background()
-	pubsubService, _ := pubsub.NewClient(ctx, "joshcarp-installer")
+	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
+	if err != nil{
+		return nil, err
+	}
 	return pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
 		Topic:  pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
