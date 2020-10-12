@@ -59,7 +59,7 @@ func SlackCommandSubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error)
 	ctx := context.Background()
 	pubsubService, _ := pubsub.NewClient(ctx, "joshcarp-installer")
 	return pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
-		Topic: nil,
+		Topic:  pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
 			Endpoint:   "projects/joshcarp-installer/topics/slack",
 			Attributes: payload.toMap(),
