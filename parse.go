@@ -42,7 +42,7 @@ func ParseCommand(cmd string)(command, error){
 		}
 	}
 	if len(ret.Users) == 0 {
-		return ret, fmt.Errorf("Invalid command")
+		return ret, fmt.Errorf("Invalid command: %s", cmd)
 	}
 	return ret, nil
 }
