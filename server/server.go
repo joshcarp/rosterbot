@@ -1,18 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"github.com/joshcarp/rosterbot"
-	"log"
-	"net"
-	"net/http"
-
+	"github.com/slack-go/slack"
 )
 
 func main() {
-	http.HandleFunc("/", rosterbot.ServeHTTP)
-	lis, err := net.Listen("tcp", ":80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Fatal(http.Serve(lis, nil))
+	a, b := rosterbot.SlackCommandSubscribe(slack.SlashCommand{
+		Token:          "",
+		TeamID:         "",
+		TeamDomain:     "",
+		EnterpriseID:   "",
+		EnterpriseName: "",
+		ChannelID:      "",
+		ChannelName:    "",
+		UserID:         "",
+		UserName:       "",
+		Command:        "",
+		Text:           `"* * * * *" "foobar" @joshuacarpeggiani @joshuacarpeggiani`,
+		ResponseURL:    "",
+		TriggerID:      "",
+	})
+	fmt.Println(a,b)
 }
