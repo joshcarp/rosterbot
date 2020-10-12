@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -47,8 +46,8 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cmd, _ := slack.SlashCommandParse(r)
 	_, err := SlackCommandSubscribe(cmd)
 	if err != nil {
-		log.Println("{"+err.Error()+"}")
-	}else{
+		log.Println("{" + err.Error() + "}")
+	} else {
 		log.Println("yay")
 	}
 
@@ -59,22 +58,20 @@ func SlackCommandSubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error)
 	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.Command}
 	ctx := context.Background()
 	pubsubService, _ := pubsub.NewClient(ctx, "joshcarp-installer")
-	pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
-		Topic:               nil,
-		PushConfig:          pubsub.PushConfig{
-			Endpoint:             "projects/joshcarp-installer/topics/slack",
-			Attributes:           payload.toMap(),
+	return pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
+		Topic: nil,
+		PushConfig: pubsub.PushConfig{
+			Endpoint:   "projects/joshcarp-installer/topics/slack",
+			Attributes: payload.toMap(),
 		},
 	})
 }
 
 func (s *server) SlackRespond(w http.ResponseWriter, r *http.Request) {
-	log.Println(r)
-	//var res *http.Response
-	//var err error
-	//command, err := slack.SlashCommandParse(r)
+	//log.Println(r)
 	//rosterbotCommand, err := ParseCommand(command.Command)
-
+	//pubsubService, _ := pubsub.NewClient(context.Background(), "joshcarp-installer")
+	//pubsubService.Subscription("foobar").
 	//s.PostMessage(command.ChannelID, slack.MsgOptionText(fmt.Sprintf(`{
 	//"channel": "%s",
 	//"text": "The time in %s is %s",
