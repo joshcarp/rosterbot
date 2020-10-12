@@ -1,7 +1,7 @@
 package main
 
 import (
-	 "github.com/joshcarp/whattimeisitrightnow"
+	"github.com/joshcarp/rosterbot"
 	"log"
 	"net"
 	"net/http"
@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", whattimeisitrightnow.ServeHTTP)
+	http.HandleFunc("/", rosterbot.ServeHTTP)
 	lis, err := net.Listen("tcp", ":80")
 	if err != nil {
 		log.Fatal(err)

@@ -23,6 +23,7 @@ jobs:
                  --entry-point=ServeHTTP \
                  --runtime=go113 \
                  --trigger-http \
+                 --set-env-vars=PUSH_URL=https://us-central1-joshcarp-installer.cloudfunctions.net/rosterbot \
                  --allow-unauthenticated
       - name: Set permissions
         run: |-
