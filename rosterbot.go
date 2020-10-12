@@ -59,7 +59,7 @@ func SlackCommandSubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error)
 	if err != nil{
 		return nil, err
 	}
-	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.Command}
+	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID}
 	ctx := context.Background()
 	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
 	if err != nil{
