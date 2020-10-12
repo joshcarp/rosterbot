@@ -119,7 +119,7 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (s *server) RespondHandler(w http.ResponseWriter, r *http.Request) {
+func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	b, _ := httputil.DumpRequest(r, true)
 	fmt.Println(b)
 }

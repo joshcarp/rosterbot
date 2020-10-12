@@ -20,7 +20,7 @@ jobs:
       - name: Deploy
         run: |
           gcloud functions deploy respond \
-                 --entry-point=ServeHTTP \
+                 --entry-point=RespondHandler \
                  --runtime=go113 \
                  --trigger-http \
                  --allow-unauthenticated
