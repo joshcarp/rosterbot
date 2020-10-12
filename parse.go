@@ -18,7 +18,7 @@ type command struct{
 func ParseCommand(cmd string)(command, error){
 	var (
 		ret = command{Users: []string{}}
-		commandRe  = regexp.MustCompile(`(?:roster)\s+?"(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>@.+)`)
+		commandRe  = regexp.MustCompile(`\s+?"(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>@.+)`)
 	)
 	for _, match := range commandRe.FindAllStringSubmatch(cmd, -1) {
 		if match == nil {
