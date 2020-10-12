@@ -19,13 +19,13 @@ jobs:
         run: gcloud config set core/project joshcarp-installer
       - name: Deploy
         run: |
-          gcloud functions deploy whattimeisitrightnow \
+          gcloud functions deploy rosterbot \
                  --entry-point=ServeHTTP \
                  --runtime=go113 \
                  --trigger-http \
                  --allow-unauthenticated
       - name: Set permissions
         run: |-
-          gcloud functions add-iam-policy-binding whattimeisitrightnow\
+          gcloud functions add-iam-policy-binding rosterbot\
             --member="allUsers" \
             --role="roles/cloudfunctions.invoker"
