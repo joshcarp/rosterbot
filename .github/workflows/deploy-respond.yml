@@ -19,14 +19,13 @@ jobs:
         run: gcloud config set core/project joshcarp-installer
       - name: Deploy
         run: |
-          gcloud functions deploy rosterbot \
+          gcloud functions deploy respond \
                  --entry-point=ServeHTTP \
                  --runtime=go113 \
                  --trigger-http \
-                 --set-env-vars=PUSH_URL=https://us-central1-joshcarp-installer.cloudfunctions.net/rosterbot \
                  --allow-unauthenticated
       - name: Set permissions
         run: |-
-          gcloud functions add-iam-policy-binding rosterbot\
+          gcloud functions add-iam-policy-binding respond\
             --member="allUsers" \
             --role="roles/cloudfunctions.invoker"

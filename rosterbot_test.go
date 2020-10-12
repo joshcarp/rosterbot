@@ -2,7 +2,6 @@ package rosterbot
 
 import (
 	"github.com/slack-go/slack"
-	"net/http/httptest"
 	"testing"
 )
 
@@ -25,13 +24,13 @@ func TestRosterBot(t *testing.T){
 
 }
 func NewMockRequest(m map[string][]string){
-	s := server{}
-	ser := httptest.NewServer(&s)
-	ser.Client().PostForm(ser.URL, m)
+	//s := server{}
+	//ser := httptest.NewServer(&s)
+	//ser.Client().PostForm(ser.URL, m)
 }
 
 func TestSlackCommandSubscribe(t *testing.T){
-	SlackCommandSubscribe(slack.SlashCommand{
+	Subscribe(slack.SlashCommand{
 		Token:          "",
 		TeamID:         "",
 		TeamDomain:     "",

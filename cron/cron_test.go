@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -23,4 +24,7 @@ func TestParseCommand(t *testing.T) {
 
 		})
 	}
+}
+func TestWhatever(t *testing.T) {
+	fmt.Println(Now().Map())
 }
