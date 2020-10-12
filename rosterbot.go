@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -61,7 +62,7 @@ func SlackCommandSubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error)
 	return pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
 		Topic:  pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
-			Endpoint:   "projects/joshcarp-installer/topics/slack",
+			Endpoint:   os.Getenv("PUSH_URL"),
 			Attributes: payload.toMap(),
 		},
 	})
