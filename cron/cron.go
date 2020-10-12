@@ -3,6 +3,8 @@ package cron
 import (
 	"fmt"
 	"regexp"
+	"strconv"
+	"time"
 )
 
 var cronRe = regexp.MustCompile(`(?P<minute>.*?) (?P<hour>.*?) (?P<dom>.*?) (?P<month>.*?) (?P<dow>.*)`)
@@ -17,6 +19,16 @@ type Cron struct{
 
 func (c Cron)String()string{
 	return fmt.Sprintf("%s %s %s %s %s", c.Minute, c.Hour, c.Dom, c.Month, c.Dow)
+}
+
+func (c Cron)Map()map[string]string {
+	return map[string]string{
+		"minute":c.Minute,
+		"hour":c.Hour,
+		"dom":c.Dom,
+		"month":c.Month,
+		"dow":c.Dow,
+	}
 }
 
 func Parse(s string)(Cron, error){
@@ -47,4 +59,17 @@ func Parse(s string)(Cron, error){
 		}
 	}
 	return ret, nil
+}
+
+func Now()Cron{
+	t := time.Now()
+	t.Hour()
+	_, month, day := t.Date()
+	return Cron{
+		Minute: strconv.Itoa(t.Minute()),
+		Hour:   strconv.Itoa(t.Hour()),
+		Dom:    strconv.Itoa(day),
+		Month:  strconv.Itoa(int(month)),
+		Dow:    strconv.Itoa(int(t.Weekday())),
+	}
 }
