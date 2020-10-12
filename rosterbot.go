@@ -55,7 +55,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func SlackCommandSubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
-	rosterbotCommand, err := ParseCommand(cmd.Command)
+	rosterbotCommand, err := ParseCommand(cmd.Text)
 	if err != nil{
 		return nil, err
 	}
