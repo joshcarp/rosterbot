@@ -183,7 +183,7 @@ func DumpRequest(w http.ResponseWriter, r *http.Request) {
 		os.Getenv("SLACK_CLIENT_ID"),
 		os.Getenv("SLACK_CLIENT_SECRET"),
 		code,
-		r.URL.String())
+		"")
 	if err != nil{
 		fmt.Println(err)
 	}
