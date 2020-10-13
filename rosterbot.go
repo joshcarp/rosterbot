@@ -156,7 +156,7 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	var secret slack.OAuthV2Response
 	json.Unmarshal(b,&secret)
 
-	if err := slack.PostWebhook(secret.IncomingWebhook.ConfigurationURL,  &slack.WebhookMessage{
+	if err := slack.PostWebhook(secret.IncomingWebhook.URL,  &slack.WebhookMessage{
 		Text:            payload.Message,
 	}); err != nil {
 		fmt.Println(err)
