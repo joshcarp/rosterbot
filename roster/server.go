@@ -11,7 +11,7 @@ type Server struct {
 	SlackClientSecret string
 }
 
-func NewServer(topic, pushURL, projectID string) Server {
+func NewServer(topic, pushURL, projectID, SlackClientID,SlackClientSecret  string) Server {
 	return Server{
 		Client:    http.DefaultClient,
 		Topic:     topic,
