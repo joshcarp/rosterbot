@@ -1,24 +1,25 @@
-package rosterbot
+package command
 
 import (
 	"fmt"
-	"github.com/joshcarp/rosterbot/cron"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/joshcarp/rosterbot/cron"
 )
 
-type command struct{
+type Command struct {
 	StartTime time.Time
-	Time    cron.Cron
-	Message string
-	Users   []string
+	Time      cron.Cron
+	Message   string
+	Users     []string
 }
 
-func ParseCommand(cmd string)(command, error){
+func ParseCommand(cmd string) (Command, error) {
 	var (
-		ret = command{Users: []string{}}
-		commandRe  = regexp.MustCompile(`"(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>@.+)`)
+		ret       = Command{Users: []string{}}
+		commandRe = regexp.MustCompile(`"(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>@.+)`)
 	)
 	for _, match := range commandRe.FindAllStringSubmatch(cmd, -1) {
 		if match == nil {
@@ -29,8 +30,8 @@ func ParseCommand(cmd string)(command, error){
 				switch name {
 				case "time":
 					c, err := cron.Parse(match[i])
-					if err != nil{
-						return command{}, err
+					if err != nil {
+						return Command{}, err
 					}
 					ret.Time = c
 				case "message":
@@ -42,16 +43,16 @@ func ParseCommand(cmd string)(command, error){
 		}
 	}
 	if len(ret.Users) == 0 {
-		return ret, fmt.Errorf("Invalid command: %s", cmd)
+		return ret, fmt.Errorf("Invalid Command: %s", cmd)
 	}
 	return ret, nil
 }
 
-func ParseUsers(s string)[]string{
+func ParseUsers(s string) []string {
 	var ret = []string{}
 	withoutcommas := strings.ReplaceAll(s, " ", ",")
-	for _, user := range strings.Split(withoutcommas, ","){
-		if user != ""{
+	for _, user := range strings.Split(withoutcommas, ",") {
+		if user != "" {
 			ret = append(ret, user)
 		}
 	}

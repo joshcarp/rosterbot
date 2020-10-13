@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestPublishHandler(t *testing.T){
+func TestPublishHandler(t *testing.T) {
 	fmt.Println(GetSecretData("T01ATBKH4UU"))
 
 }

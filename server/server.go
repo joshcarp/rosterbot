@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/joshcarp/rosterbot"
 	"net/http"
+
+	"github.com/joshcarp/rosterbot"
 )
 
 func main() {

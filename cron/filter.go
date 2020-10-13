@@ -1,39 +1,38 @@
-package filter
+package cron
 
 import (
 	"fmt"
-	"github.com/joshcarp/rosterbot/cron"
 )
 
 func p(format string, a ...interface{}) string {
 	return fmt.Sprintf(format, a...)
 }
 
-func CreateFilter(c cron.Cron)(filter string){
-	switch c.Minute{
+func CreateFilter(c Cron) (filter string) {
+	switch c.Minute {
 	case "*":
 	default:
 		filter += p(`(attributes.minute = "%s")`, c.Minute)
 	}
-	switch c.Hour{
+	switch c.Hour {
 	case "*":
 	default:
 		filter += p(`AND (attributes.hour = "%s")`, c.Hour)
 	}
-	switch c.Dom{
+	switch c.Dom {
 	case "*":
 	default:
-		filter +=  p(`AND (attributes.dom = "%s")`, c.Dom)
+		filter += p(`AND (attributes.dom = "%s")`, c.Dom)
 	}
-	switch c.Month{
+	switch c.Month {
 	case "*":
 	default:
 		filter += p(`AND (attributes.month = "%s")`, c.Month)
 	}
-	switch c.Dow{
+	switch c.Dow {
 	case "*":
 	default:
-		filter +=  p(`AND (attributes.dow = "%s")`, c.Dow)
+		filter += p(`AND (attributes.dow = "%s")`, c.Dow)
 	}
 	return
 }
