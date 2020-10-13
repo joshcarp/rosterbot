@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -72,10 +74,10 @@ func Subscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	return pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
+	return pubsubService.CreateSubscription(ctx, payload.Channel+strconv.Itoa(rand.Int()), pubsub.SubscriptionConfig{
 		Topic: pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
-			Endpoint:   os.Getenv("PUSH_URL"),
+			Endpoint:   os.Getenv("PUSH_URL")+"?foo=bar",
 			Attributes: payload.toMap(),
 		},
 	})
