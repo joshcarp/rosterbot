@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/joshcarp/rosterbot/secrets"
 	"log"
 	"math/rand"
 	"net/http"
@@ -21,6 +22,8 @@ import (
 	"github.com/slack-go/slack"
 )
 
+const projectID = `joshcarp-installer`
+
 type server struct {
 	*slack.Client
 }
@@ -28,7 +31,8 @@ type server struct {
 type RosterPayload struct {
 	command
 	Channel string
-	Token string
+	Token   string
+	TeamID string
 }
 
 func (r RosterPayload) toMap() map[string]string {
@@ -39,11 +43,11 @@ func (r RosterPayload) toMap() map[string]string {
 		"users":     strings.Join(r.command.Users, ", "),
 	}
 }
-func (r RosterPayload)toJson()[]byte{
+func (r RosterPayload) toJson() []byte {
 	b, _ := json.Marshal(&r)
 	return b
 }
-func (r *RosterPayload)FromJson(b []byte)error{
+func (r *RosterPayload) FromJson(b []byte) error {
 	return json.Unmarshal(b, r)
 }
 
@@ -78,7 +82,7 @@ func Subscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID, Token: cmd.Token}
+	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID, Token: cmd.Token, TeamID:cmd.TeamID}
 	ctx := context.Background()
 	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
 	if err != nil {
@@ -87,7 +91,7 @@ func Subscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	return pubsubService.CreateSubscription(ctx, payload.Channel+strconv.Itoa(rand.Int()), pubsub.SubscriptionConfig{
 		Topic: pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
-			Endpoint:   os.Getenv("PUSH_URL")+"?content="+base64.StdEncoding.EncodeToString(payload.toJson()),
+			Endpoint:   os.Getenv("PUSH_URL") + "?content=" + base64.StdEncoding.EncodeToString(payload.toJson()),
 			Attributes: payload.toMap(),
 		},
 	})
@@ -113,7 +117,7 @@ func Unsubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 		Filter: filter.CreateFilter(payload.Time),
 	})
 }
-func CreateURL(){
+func CreateURL() {
 
 }
 func PublishHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,12 +127,12 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	res := pubsubService.Topic("slack").Publish(ctx, &pubsub.Message{
-		ID:              "foobar123",
-		Data:            []byte("{'content': '1234'}"),
-		Attributes:      cron.Now().Map(),
-		PublishTime:     time.Now(),
+		ID:          "foobar123",
+		Data:        []byte("{'content': '1234'}"),
+		Attributes:  cron.Now().Map(),
+		PublishTime: time.Now(),
 	})
-	for{
+	for {
 		select {
 		case <-res.Ready():
 			return
@@ -136,29 +140,56 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	b, _ := httputil.DumpRequest(r, true)
 	contents, _ := base64.StdEncoding.DecodeString(r.URL.Query().Get("content"))
 	payload := RosterPayload{}
-	if err := payload.FromJson(contents); err != nil{
+	if err := payload.FromJson(contents); err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("{"+string(b)+"}")
-	c := slack.New(payload.Token)
-	message := fmt.Sprintf(`{
-  "channel": "%s",
-  "text": "%s",
-  "as_user": true
-}`, payload.Channel, payload.Message)
-	_, _, err := c.PostMessage(payload.Channel, slack.MsgOptionText(message, false))
+	fmt.Println("{" + string(b) + "}")
+	b, err := secrets.GetSecretData(payload.TeamID)
+	if err != nil {
+		fmt.Println("Error getting secret data", err)
+	}
+	var secret slack.OAuthResponse
+	json.Unmarshal(b,&secret)
+
+	if err := slack.PostWebhook(secret.IncomingWebhook.URL,  &slack.WebhookMessage{
+		Username:        "rosterbot",
+		IconEmoji:       "",
+		IconURL:         "",
+		Channel:         payload.Channel,
+		ThreadTimestamp: time.Now().String(),
+		Text:            payload.Message,
+	}); err != nil {
+		fmt.Println(err)
+	}
+
+}
+
+type SlackWorkspaceSecret struct{
+	AccessToken string
+	Scope string
+	ClientID string
+}
+
+func DumpRequest(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+	accessToken, err := slack.GetOAuthResponseContext(
+		context.Background(),
+		http.DefaultClient,
+		os.Getenv("CLIENT_ID"),
+		os.Getenv("CLIENT_SECRET"),
+		code,
+		r.URL.String())
 	if err != nil{
 		fmt.Println(err)
 	}
-}
-
-func DumpRequest(w http.ResponseWriter, r *http.Request){
-	b, _ := httputil.DumpRequest(r, true)
-	fmt.Println(b)
+	a, err  := json.Marshal(accessToken)
+	if err != nil {
+		fmt.Println(err)
+	}
+	secrets.CreateSecret(accessToken.TeamID, a)
 }
