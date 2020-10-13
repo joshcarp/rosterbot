@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"github.com/joshcarp/rosterbot"
+	"net/http"
 )
 
 func main() {
-	fmt.Println(time.Now().Date())
+	http.HandleFunc("/", rosterbot.RespondHandler)
+	http.ListenAndServe(":8081", nil)
 }
