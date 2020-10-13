@@ -30,14 +30,14 @@ type server struct {
 
 type RosterPayload struct {
 	command
-	Channel string
-	Token   string
-	TeamID string
+	ChannelID string
+	Token     string
+	TeamID    string
 }
 
 func (r RosterPayload) toMap() map[string]string {
 	return map[string]string{
-		"channel":   r.Channel,
+		"channel":   r.ChannelID,
 		"starttime": r.command.StartTime.String(),
 		"message":   r.command.Message,
 		"users":     strings.Join(r.command.Users, ", "),
@@ -52,7 +52,7 @@ func (r *RosterPayload) FromJson(b []byte) error {
 }
 
 func (r *RosterPayload) fromMap(m map[string]string) {
-	r.Channel = m["channel"]
+	r.ChannelID = m["channel"]
 	r.StartTime, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", m["starttime"])
 	r.Message = m["message"]
 	r.Users = strings.Split(m["users"], ", ")
@@ -82,13 +82,13 @@ func Subscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID, Token: cmd.Token, TeamID:cmd.TeamID}
+	payload := RosterPayload{command: rosterbotCommand, ChannelID: cmd.ChannelID, Token: cmd.Token, TeamID:cmd.TeamID}
 	ctx := context.Background()
 	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
 	if err != nil {
 		return nil, err
 	}
-	return pubsubService.CreateSubscription(ctx, payload.Channel+strconv.Itoa(rand.Int()), pubsub.SubscriptionConfig{
+	return pubsubService.CreateSubscription(ctx, payload.ChannelID+strconv.Itoa(rand.Int()), pubsub.SubscriptionConfig{
 		Topic: pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
 			Endpoint:   os.Getenv("PUSH_URL") + "?content=" + base64.StdEncoding.EncodeToString(payload.toJson()),
@@ -102,13 +102,13 @@ func Unsubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID}
+	payload := RosterPayload{command: rosterbotCommand, ChannelID: cmd.ChannelID}
 	ctx := context.Background()
 	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
 	if err != nil {
 		return nil, err
 	}
-	return pubsubService.CreateSubscription(ctx, payload.Channel, pubsub.SubscriptionConfig{
+	return pubsubService.CreateSubscription(ctx, payload.ChannelID, pubsub.SubscriptionConfig{
 		Topic: pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
 			Endpoint:   os.Getenv("PUSH_URL"),
@@ -149,7 +149,7 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("{" + string(b) + "}")
-	b, err := secrets.GetSecretData(payload.TeamID)
+	b, err := secrets.GetSecretData(payload.TeamID+"/"+payload.ChannelID)
 	if err != nil {
 		fmt.Println("Error getting secret data", err)
 	}
@@ -187,5 +187,5 @@ func DumpRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	secrets.CreateSecret(accessToken.Team.ID, a)
+	secrets.CreateSecret(accessToken.Team.ID+"/"+accessToken.IncomingWebhook.ChannelID, a)
 }
