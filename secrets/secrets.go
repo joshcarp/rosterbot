@@ -39,7 +39,7 @@ func GetSecret(name string) (*secretmanagerpb.Secret, error) {
 func GetSecretData(name string) ([]byte, error) {
 	secretClinet, _ := secretmanager.NewClient(context.Background())
 	s, err := secretClinet.AccessSecretVersion(context.Background(), &secretmanagerpb.AccessSecretVersionRequest{
-		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", projectID, name),
+		Name: fmt.Sprintf("projects/95746528287/secrets/%s/versions/latest", name),
 	})
 	if err != nil {
 		return nil, err
