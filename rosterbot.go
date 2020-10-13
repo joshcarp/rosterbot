@@ -153,7 +153,7 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error getting secret data", err)
 	}
-	var secret slack.OAuthResponse
+	var secret slack.OAuthV2Response
 	json.Unmarshal(b,&secret)
 
 	if err := slack.PostWebhook(secret.IncomingWebhook.URL,  &slack.WebhookMessage{
@@ -177,7 +177,7 @@ type SlackWorkspaceSecret struct{
 
 func DumpRequest(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-	accessToken, err := slack.GetOAuthResponseContext(
+	accessToken, err := slack.GetOAuthV2ResponseContext(
 		context.Background(),
 		http.DefaultClient,
 		os.Getenv("SLACK_CLIENT_ID"),
@@ -191,5 +191,5 @@ func DumpRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	secrets.CreateSecret(accessToken.TeamID, a)
+	secrets.CreateSecret(accessToken.Team.ID, a)
 }
