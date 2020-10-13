@@ -180,8 +180,8 @@ func DumpRequest(w http.ResponseWriter, r *http.Request) {
 	accessToken, err := slack.GetOAuthResponseContext(
 		context.Background(),
 		http.DefaultClient,
-		os.Getenv("CLIENT_ID"),
-		os.Getenv("CLIENT_SECRET"),
+		os.Getenv("SLACK_CLIENT_ID"),
+		os.Getenv("SLACK_CLIENT_SECRET"),
 		code,
 		r.URL.String())
 	if err != nil{
