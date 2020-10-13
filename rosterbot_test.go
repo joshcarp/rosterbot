@@ -1,8 +1,10 @@
 package rosterbot
 
 import (
+	"encoding/hex"
+	"fmt"
 	"github.com/slack-go/slack"
-	"net/http"
+	"math/rand"
 	"testing"
 )
 
@@ -46,11 +48,17 @@ func TestSlackCommandSubscribe(t *testing.T){
 		ResponseURL:    "",
 		TriggerID:      "",
 	})
-
 }
 
-func TestPublishHandler(t *testing.T){
-	http.HandleFunc("/", PublishHandler)
 
-	http.ListenAndServe(":8080", nil)
+
+func Salt() (string) {
+	bytes := make([]byte, 10)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return ""
+	}
+	hexSalt := make([]byte, hex.EncodedLen(len(bytes)))
+	hex.Encode(hexSalt, bytes)
+	return string(hexSalt)
 }
