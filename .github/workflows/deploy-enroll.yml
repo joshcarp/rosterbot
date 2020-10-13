@@ -19,14 +19,14 @@ jobs:
         run: gcloud config set core/project joshcarp-installer
       - name: Deploy
         run: |
-          gcloud functions deploy dump \
-                 --entry-point=DumpRequest \
+          gcloud functions deploy enroll \
+                 --entry-point=Enroll \
                  --runtime=go113 \
                  --trigger-http \
                  --set-env-vars=SLACK_CLIENT_ID=${{secrets.SLACK_CLIENT_ID}},SLACK_CLIENT_SECRET=${{secrets.SLACK_CLIENT_SECRET}}\
                  --allow-unauthenticated
       - name: Set permissions
         run: |-
-          gcloud functions add-iam-policy-binding dump\
+          gcloud functions add-iam-policy-binding enroll\
             --member="allUsers" \
             --role="roles/cloudfunctions.invoker"
