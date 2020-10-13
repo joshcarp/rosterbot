@@ -157,3 +157,8 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 }
+
+func DumpRequest(w http.ResponseWriter, r *http.Request){
+	b, _ := httputil.DumpRequest(r, true)
+	fmt.Println(b)
+}
