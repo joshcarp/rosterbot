@@ -9,7 +9,7 @@ import (
 
 var cronRe = regexp.MustCompile(`(?P<minute>.*?) (?P<hour>.*?) (?P<dom>.*?) (?P<month>.*?) (?P<dow>.*)`)
 
-type Cron struct{
+type Cron struct {
 	Minute string
 	Hour   string
 	Dom    string
@@ -17,27 +17,27 @@ type Cron struct{
 	Dow    string
 }
 
-func (c Cron)String()string{
+func (c Cron) String() string {
 	return fmt.Sprintf("%s %s %s %s %s", c.Minute, c.Hour, c.Dom, c.Month, c.Dow)
 }
 
-func (c Cron)Map()map[string]string {
+func (c Cron) Map() map[string]string {
 	return map[string]string{
-		"minute":c.Minute,
-		"hour":c.Hour,
-		"dom":c.Dom,
-		"month":c.Month,
-		"dow":c.Dow,
+		"minute": c.Minute,
+		"hour":   c.Hour,
+		"dom":    c.Dom,
+		"month":  c.Month,
+		"dow":    c.Dow,
 	}
 }
 
-func Parse(s string)(Cron, error){
+func Parse(s string) (Cron, error) {
 	var ret Cron
 	matches := cronRe.FindAllStringSubmatch(s, -1)
-	if len(matches) == 0{
+	if len(matches) == 0 {
 		return Cron{}, fmt.Errorf("Can't parse cron")
 	}
-	for _, match := range matches  {
+	for _, match := range matches {
 		if match == nil {
 			continue
 		}
@@ -61,7 +61,7 @@ func Parse(s string)(Cron, error){
 	return ret, nil
 }
 
-func Now()Cron{
+func Now() Cron {
 	t := time.Now()
 	t.Hour()
 	_, month, day := t.Date()

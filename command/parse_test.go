@@ -1,4 +1,4 @@
-package rosterbot
+package command
 
 import (
 	"testing"

@@ -4,8 +4,6 @@ import (
 	"encoding/hex"
 	"math/rand"
 	"testing"
-
-	"github.com/slack-go/slack"
 )
 
 func TestRosterBot(t *testing.T) {
@@ -18,7 +16,7 @@ func TestRosterBot(t *testing.T) {
 		"channel_id":      {"acsf"},
 		"user_id":         {"a sdf"},
 		"user_name":       {"casfd"},
-		"command":         {"roster "},
+		"Command":         {"roster "},
 		"text":            {"acs"},
 		"response_url":    {"acf"},
 		"trigger_id":      {"csf"},
@@ -33,21 +31,21 @@ func NewMockRequest(m map[string][]string) {
 }
 
 func TestSlackCommandSubscribe(t *testing.T) {
-	Subscribe(slack.SlashCommand{
-		Token:          "",
-		TeamID:         "",
-		TeamDomain:     "",
-		EnterpriseID:   "",
-		EnterpriseName: "",
-		ChannelID:      "",
-		ChannelName:    "",
-		UserID:         "",
-		UserName:       "",
-		Command:        "\\roster \"0 0 9 * *\", \"this is the message\", @user1, @user2",
-		Text:           "",
-		ResponseURL:    "",
-		TriggerID:      "",
-	})
+	//roster.Subscribe(slack.SlashCommand{
+	//	Token:          "",
+	//	TeamID:         "",
+	//	TeamDomain:     "",
+	//	EnterpriseID:   "",
+	//	EnterpriseName: "",
+	//	ChannelID:      "",
+	//	ChannelName:    "",
+	//	UserID:         "",
+	//	UserName:       "",
+	//	Command:        "\\roster \"0 0 9 * *\", \"this is the message\", @user1, @user2",
+	//	Text:           "",
+	//	ResponseURL:    "",
+	//	TriggerID:      "",
+	//})
 }
 
 func Salt() string {

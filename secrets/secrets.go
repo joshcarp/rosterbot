@@ -25,7 +25,7 @@ func CreateSecret(name string, payload []byte) error {
 		},
 	}
 	_, b := secretClinet.CreateSecret(ctx, createSecretReq)
-	if b != nil{
+	if b != nil {
 		return b
 	}
 	return UpdateSecret(name, payload)
@@ -39,7 +39,7 @@ func GetSecret(name string) (*secretmanagerpb.Secret, error) {
 func GetSecretData(name string) ([]byte, error) {
 	secretClinet, _ := secretmanager.NewClient(context.Background())
 	s, err := secretClinet.AccessSecretVersion(context.Background(), &secretmanagerpb.AccessSecretVersionRequest{
-		Name: fmt.Sprintf("projects/95746528287/secrets/%s/versions/latest", name),
+		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", projectID, name),
 	})
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func GetSecretData(name string) ([]byte, error) {
 	return s.Payload.Data, nil
 }
 
-func UpdateSecret(name string, payload []byte ) error {
+func UpdateSecret(name string, payload []byte) error {
 	secretClinet, _ := secretmanager.NewClient(context.Background())
 	secret, err := GetSecret(name)
 	if err != nil {
