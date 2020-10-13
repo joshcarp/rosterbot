@@ -19,13 +19,13 @@ jobs:
         run: gcloud config set core/project joshcarp-installer
       - name: Deploy
         run: |
-          gcloud functions deploy publish \
+          gcloud functions deploy dump \
                  --entry-point=DumpRequest \
                  --runtime=go113 \
                  --trigger-http \
                  --allow-unauthenticated
       - name: Set permissions
         run: |-
-          gcloud functions add-iam-policy-binding publish\
+          gcloud functions add-iam-policy-binding dump\
             --member="allUsers" \
             --role="roles/cloudfunctions.invoker"
