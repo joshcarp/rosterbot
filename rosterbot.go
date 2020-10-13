@@ -142,12 +142,15 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	contents, _ := base64.StdEncoding.DecodeString(r.URL.Query().Get("content"))
 	payload := RosterPayload{}
 	payload.FromJson(contents)
-	fmt.Println(string(b))
+	fmt.Println("{"+string(b)+"}")
 	c := slack.New(payload.Token)
 	message := fmt.Sprintf(`{
   "channel": "%s",
   "text": "%s",
   "as_user": true
 }`, payload.Channel, payload.Message)
-	c.PostMessage(payload.Channel, slack.MsgOptionText(message, false))
+	_, _, err := c.PostMessage(payload.Channel, slack.MsgOptionText(message, false))
+	if err != nil{
+		fmt.Println(err)
+	}
 }
