@@ -2,6 +2,8 @@ package rosterbot
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
@@ -26,6 +28,7 @@ type server struct {
 type RosterPayload struct {
 	command
 	Channel string
+	Token string
 }
 
 func (r RosterPayload) toMap() map[string]string {
@@ -35,6 +38,13 @@ func (r RosterPayload) toMap() map[string]string {
 		"message":   r.command.Message,
 		"users":     strings.Join(r.command.Users, ", "),
 	}
+}
+func (r RosterPayload)toJson()[]byte{
+	b, _ := json.Marshal(&r)
+	return b
+}
+func (r *RosterPayload)FromJson(b []byte)error{
+	return json.Unmarshal(b, r)
 }
 
 func (r *RosterPayload) fromMap(m map[string]string) {
@@ -68,7 +78,7 @@ func Subscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID}
+	payload := RosterPayload{command: rosterbotCommand, Channel: cmd.ChannelID, Token: cmd.Token}
 	ctx := context.Background()
 	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
 	if err != nil {
@@ -77,7 +87,7 @@ func Subscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 	return pubsubService.CreateSubscription(ctx, payload.Channel+strconv.Itoa(rand.Int()), pubsub.SubscriptionConfig{
 		Topic: pubsubService.Topic("slack"),
 		PushConfig: pubsub.PushConfig{
-			Endpoint:   os.Getenv("PUSH_URL")+"?foo=bar",
+			Endpoint:   os.Getenv("PUSH_URL")+"?content="+base64.StdEncoding.EncodeToString(payload.toJson()),
 			Attributes: payload.toMap(),
 		},
 	})
@@ -103,7 +113,9 @@ func Unsubscribe(cmd slack.SlashCommand) (*pubsub.Subscription, error) {
 		Filter: filter.CreateFilter(payload.Time),
 	})
 }
+func CreateURL(){
 
+}
 func PublishHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	pubsubService, err := pubsub.NewClient(ctx, "joshcarp-installer")
@@ -127,5 +139,15 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 
 func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	b, _ := httputil.DumpRequest(r, true)
-	fmt.Println(b)
+	contents, _ := base64.StdEncoding.DecodeString(r.URL.Query().Get("content"))
+	payload := RosterPayload{}
+	payload.FromJson(contents)
+	fmt.Println(string(b))
+	c := slack.New(payload.Token)
+	message := fmt.Sprintf(`{
+  "channel": "%s",
+  "text": "%s",
+  "as_user": true
+}`, payload.Channel, payload.Message)
+	c.PostMessage(payload.Channel, slack.MsgOptionText(message, false))
 }
