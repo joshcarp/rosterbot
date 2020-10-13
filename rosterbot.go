@@ -157,7 +157,7 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(b,&secret)
 
 	if err := slack.PostWebhook(secret.IncomingWebhook.URL,  &slack.WebhookMessage{
-		Username: "rosterbot",
+		Username: secret.BotUserID,
 		Text:            payload.Message,
 	}); err != nil {
 		fmt.Println(err)
