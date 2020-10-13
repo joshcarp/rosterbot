@@ -6,6 +6,6 @@ import (
 )
 
 func TestPublishHandler(t *testing.T){
-	fmt.Println(GetSecretData("Salt"))
+	fmt.Println(GetSecretData("T01ATBKH4UU"))
 
 }
