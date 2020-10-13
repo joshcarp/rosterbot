@@ -23,5 +23,5 @@ func (s Server) Enroll(ctx context.Context, code string) error {
 	if err != nil {
 		return err
 	}
-	return secrets.CreateSecret(accessToken.Team.ID+"/"+accessToken.IncomingWebhook.ChannelID, a)
+	return secrets.CreateSecret(accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, a)
 }

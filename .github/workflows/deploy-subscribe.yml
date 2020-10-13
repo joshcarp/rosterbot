@@ -23,7 +23,7 @@ jobs:
                  --entry-point=SubscribeHandler \
                  --runtime=go113 \
                  --trigger-http \
-                 --set-env-vars=PUSH_URL=https://us-central1-joshcarp-installer.cloudfunctions.net/respond \
+                 --set-env-vars=GCP_TOPIC=slack,PROJECT_ID=joshcarp-installer,PUSH_URL=https://us-central1-joshcarp-installer.cloudfunctions.net/respond \
                  --allow-unauthenticated
       - name: Set permissions
         run: |-

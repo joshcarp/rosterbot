@@ -15,7 +15,7 @@ func (s Server) Respond(ctx context.Context, contents []byte) error {
 	if err := payload.FromJson(contents); err != nil {
 		return err
 	}
-	b, err := secrets.GetSecretData(payload.TeamID + "/" + payload.ChannelID)
+	b, err := secrets.GetSecretData(payload.TeamID + "-" + payload.ChannelID)
 	if err != nil {
 		return fmt.Errorf("Error getting secret data %w", err)
 	}
