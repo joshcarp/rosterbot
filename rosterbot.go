@@ -141,7 +141,10 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 	b, _ := httputil.DumpRequest(r, true)
 	contents, _ := base64.StdEncoding.DecodeString(r.URL.Query().Get("content"))
 	payload := RosterPayload{}
-	payload.FromJson(contents)
+	if err := payload.FromJson(contents); err != nil{
+		fmt.Println(err)
+		return
+	}
 	fmt.Println("{"+string(b)+"}")
 	c := slack.New(payload.Token)
 	message := fmt.Sprintf(`{
