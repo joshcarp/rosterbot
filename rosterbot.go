@@ -34,7 +34,11 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	cmd, _ := slack.SlashCommandParse(r)
 	if _, err := server().Subscribe(context.Background(), cmd); err != nil {
 		log.Println(err)
+		w.Write([]byte("Error adding roster"))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+	w.Write([]byte("New roster added"))
 }
 
 func server() roster.Server {
