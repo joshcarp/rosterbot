@@ -2,37 +2,37 @@ package rosterbot
 
 import (
 	"encoding/hex"
-	"fmt"
-	"github.com/slack-go/slack"
 	"math/rand"
 	"testing"
+
+	"github.com/slack-go/slack"
 )
 
-func TestRosterBot(t *testing.T){
+func TestRosterBot(t *testing.T) {
 	NewMockRequest(map[string][]string{
-		"token":{"1234"},
-		"team_id":{"567"},
-		"team_domain":{"890"},
-		"enterprise_id":{"123"},
-		"enterprise_name":{"234"},
-		"channel_id":{"acsf"},
-		"user_id":{"a sdf"},
-		"user_name":{"casfd"},
-		"command":{"roster "},
-		"text":{"acs"},
-		"response_url":{"acf"},
-		"trigger_id":{"csf"},
+		"token":           {"1234"},
+		"team_id":         {"567"},
+		"team_domain":     {"890"},
+		"enterprise_id":   {"123"},
+		"enterprise_name": {"234"},
+		"channel_id":      {"acsf"},
+		"user_id":         {"a sdf"},
+		"user_name":       {"casfd"},
+		"command":         {"roster "},
+		"text":            {"acs"},
+		"response_url":    {"acf"},
+		"trigger_id":      {"csf"},
 	},
 	)
 
 }
-func NewMockRequest(m map[string][]string){
+func NewMockRequest(m map[string][]string) {
 	//s := server{}
 	//ser := httptest.NewServer(&s)
 	//ser.Client().PostForm(ser.URL, m)
 }
 
-func TestSlackCommandSubscribe(t *testing.T){
+func TestSlackCommandSubscribe(t *testing.T) {
 	Subscribe(slack.SlashCommand{
 		Token:          "",
 		TeamID:         "",
@@ -50,9 +50,7 @@ func TestSlackCommandSubscribe(t *testing.T){
 	})
 }
 
-
-
-func Salt() (string) {
+func Salt() string {
 	bytes := make([]byte, 10)
 	_, err := rand.Read(bytes)
 	if err != nil {
