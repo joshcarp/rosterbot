@@ -3,9 +3,11 @@ package rosterbot
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/joshcarp/rosterbot/roster"
 	"github.com/slack-go/slack"
@@ -32,13 +34,23 @@ func Enroll(w http.ResponseWriter, r *http.Request) {
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	cmd, _ := slack.SlashCommandParse(r)
-	if _, err := server().Subscribe(context.Background(), cmd); err != nil {
-		log.Println(err)
-		w.Write([]byte("Error adding roster"))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	switch strings.ToLower(cmd.Command){
+	case "add":
+		if _, err := server().Subscribe(context.Background(), cmd); err != nil {
+			log.Println(err)
+			w.Write([]byte("Error adding roster"))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte("New roster added" +cmd.Text))
+	case "remove":
+		i, err := server().Unsubscribe(cmd)
+		w.Write([]byte(fmt.Sprintf("Unsubscribed %d roster(s)", i) +cmd.Text))
+		if err != nil{
+			w.Write([]byte("There was a problem unsubscribing"))
+		}
+
 	}
-	w.Write([]byte("New roster added"))
 }
 
 func server() roster.Server {
