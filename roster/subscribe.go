@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"math/rand"
 	"strconv"
+	"strings"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/joshcarp/rosterbot/command"
@@ -12,7 +13,7 @@ import (
 )
 
 func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand) (*pubsub.Subscription, error) {
-	rosterbotCommand, err := command.ParseCommand(cmd.Text)
+	rosterbotCommand, err := command.ParseCommand(strings.ReplaceAll(cmd.Text, "add", ""))
 	if err != nil {
 		return nil, err
 	}

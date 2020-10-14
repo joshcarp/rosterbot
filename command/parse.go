@@ -16,10 +16,18 @@ type Command struct {
 	Users     []string
 }
 
+func MainCommand(s string) string {
+	a := strings.Split(s, " ")
+	if len(a) > 0 {
+		return a[0]
+	}
+	return ""
+}
+
 func ParseCommand(cmd string) (Command, error) {
 	var (
 		ret       = Command{Users: []string{}, StartTime: time.Now()}
-		commandRe = regexp.MustCompile(`"(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>.+)`)
+		commandRe = regexp.MustCompile(`add "(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>.+)`)
 	)
 	for _, match := range commandRe.FindAllStringSubmatch(cmd, -1) {
 		if match == nil {

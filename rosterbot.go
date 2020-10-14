@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/joshcarp/rosterbot/command"
 	"log"
 	"net/http"
 	"os"
@@ -34,7 +35,7 @@ func Enroll(w http.ResponseWriter, r *http.Request) {
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	cmd, _ := slack.SlashCommandParse(r)
-	switch strings.ToLower(cmd.Command){
+	switch strings.ToLower(command.MainCommand(cmd.Text)){
 	case "add":
 		if _, err := server().Subscribe(context.Background(), cmd); err != nil {
 			log.Println(err)
@@ -47,9 +48,11 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 		i, err := server().Unsubscribe(cmd)
 		w.Write([]byte(fmt.Sprintf("Unsubscribed %d roster(s)", i) +cmd.Text))
 		if err != nil{
+			log.Println(err)
 			w.Write([]byte("There was a problem unsubscribing"))
 		}
-
+	default:
+		w.Write([]byte("Command not known, please specify /roster add or /roster remove"))
 	}
 }
 
