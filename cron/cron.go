@@ -2,10 +2,11 @@ package cron
 
 import (
 	"fmt"
-	"github.com/robfig/cron/v3"
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 var cronRe = regexp.MustCompile(`(?P<minute>.*?) (?P<hour>.*?) (?P<dom>.*?) (?P<month>.*?) (?P<dow>.*)`)
@@ -75,13 +76,17 @@ func Now() Cron {
 	}
 }
 
+func (c Cron) Next(time2 time.Time) time.Time {
+	a, _ := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow).Parse(c.String())
+	return a.Next(time2)
+}
 
-func (c Cron) Steps(start, end time.Time)int{
+func (c Cron) Steps(start, end time.Time) int {
 	a, _ := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow).Parse(c.String())
 	var steps = 0
 	for {
 		start = a.Next(start)
-		if start.After(end){
+		if start.After(end) {
 			return steps
 		}
 		steps++

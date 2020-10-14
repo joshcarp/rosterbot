@@ -2,37 +2,39 @@ package cron
 
 import (
 	"fmt"
+	"strings"
 )
 
 func p(format string, a ...interface{}) string {
 	return fmt.Sprintf(format, a...)
 }
 
-func CreateFilter(c Cron) (filter string) {
+func CreateFilter(c Cron) (string) {
+	filter := []string{}
 	switch c.Minute {
 	case "*":
 	default:
-		filter += p(`(attributes.minute = "%s")`, c.Minute)
+		filter = append(filter, p(`(attributes.minute = "%s")`, c.Minute))
 	}
 	switch c.Hour {
 	case "*":
 	default:
-		filter += p(`AND (attributes.hour = "%s")`, c.Hour)
+		filter = append(filter, p(`(attributes.hour = "%s")`, c.Hour))
 	}
 	switch c.Dom {
 	case "*":
 	default:
-		filter += p(`AND (attributes.dom = "%s")`, c.Dom)
+		filter= append(filter,  p(`(attributes.dom = "%s")`, c.Dom))
 	}
 	switch c.Month {
 	case "*":
 	default:
-		filter += p(`AND (attributes.month = "%s")`, c.Month)
+		filter = append(filter,p(`(attributes.month = "%s")`, c.Month))
 	}
 	switch c.Dow {
 	case "*":
 	default:
-		filter += p(`AND (attributes.dow = "%s")`, c.Dow)
+		filter = append(filter,p(`(attributes.dow = "%s")`, c.Dow))
 	}
-	return
+	return strings.Join(filter, " AND ")
 }

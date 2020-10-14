@@ -14,6 +14,7 @@ func TestParseCommand(t *testing.T) {
 	}
 	var tests = []testcase{
 		{in: "* * * * *", out: "* * * * *"},
+		{in: "* 9 * * *", out: "* 9 * * *"},
 		{in: "0 3 9 5 7", out: "0 3 9 5 7"},
 		{in: " 0)(DMAN9NSDJ98 08audsfjasd8f asdasd monday asdasd", out: " 0)(DMAN9NSDJ98 08audsfjasd8f asdasd monday asdasd"},
 	}
