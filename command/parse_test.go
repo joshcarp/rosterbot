@@ -32,6 +32,12 @@ func TestParseCommand(t *testing.T) {
 			users:   []string{"@user1", "@user2"},
 			time:    "0 0 9 * *",
 		},
+		{
+			in: `/roster add "* 9 * * *" "This should execute at 7pm" @joshuacarpeggiani` ,
+			message: "This should execute at 7pm",
+			time:    "* 9 * * *",
+			users:   []string{"@joshuacarpeggiani"},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {

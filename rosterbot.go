@@ -37,13 +37,14 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	cmd, _ := slack.SlashCommandParse(r)
 	switch strings.ToLower(command.MainCommand(cmd.Text)){
 	case "add":
-		if _, err := server().Subscribe(context.Background(), cmd); err != nil {
+		_, time, err := server().Subscribe(context.Background(), cmd);
+		if err != nil {
 			log.Println(err)
 			w.Write([]byte("Error adding roster"))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte("New roster added" +cmd.Text))
+		w.Write([]byte(fmt.Sprintf("New roster added: `%s` starting on %s", cmd.Text, time.String())))
 	case "remove":
 		i, err := server().Unsubscribe(cmd)
 		w.Write([]byte(fmt.Sprintf("Unsubscribed %d roster(s)", i) +cmd.Text))
