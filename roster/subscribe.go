@@ -3,6 +3,7 @@ package roster
 import (
 	"context"
 	"encoding/base64"
+	"github.com/joshcarp/rosterbot/cron"
 	"math/rand"
 	"strconv"
 
@@ -23,6 +24,7 @@ func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand) (*pubsub.
 	}
 	return pubsubService.CreateSubscription(ctx, payload.ChannelID+strconv.Itoa(rand.Int()), pubsub.SubscriptionConfig{
 		Topic: pubsubService.Topic(s.Topic),
+		Filter: cron.CreateFilter(payload.Time),
 		PushConfig: pubsub.PushConfig{
 			Endpoint:   s.PushURL + "?content=" + base64.StdEncoding.EncodeToString(payload.ToJson()),
 			Attributes: payload.ToMap(),
