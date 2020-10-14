@@ -2,6 +2,7 @@ package cron
 
 import (
 	"fmt"
+	"github.com/robfig/cron/v3"
 	"regexp"
 	"strconv"
 	"time"
@@ -71,5 +72,18 @@ func Now() Cron {
 		Dom:    strconv.Itoa(day),
 		Month:  strconv.Itoa(int(month)),
 		Dow:    strconv.Itoa(int(t.Weekday())),
+	}
+}
+
+
+func (c Cron) Steps(start, end time.Time)int{
+	a, _ := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow).Parse(c.String())
+	var steps = 0
+	for {
+		start = a.Next(start)
+		if start.After(end){
+			return steps
+		}
+		steps++
 	}
 }

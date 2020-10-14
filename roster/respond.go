@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/joshcarp/rosterbot/command"
 	"github.com/joshcarp/rosterbot/secrets"
@@ -23,6 +24,10 @@ func (s Server) Respond(ctx context.Context, contents []byte) error {
 	if err := json.Unmarshal(b, &secret); err != nil {
 		return err
 	}
+	message := payload.Message
+	if len(payload.Users) > 0{
+		message += " "+ payload.Users[payload.Time.Steps(payload.StartTime, time.Now())%len(payload.Users)]
+	}
 	if err := slack.PostWebhookCustomHTTPContext(
 		ctx,
 		secret.IncomingWebhook.URL,
@@ -34,4 +39,8 @@ func (s Server) Respond(ctx context.Context, contents []byte) error {
 		return err
 	}
 	return nil
+}
+
+func respond(){
+
 }
