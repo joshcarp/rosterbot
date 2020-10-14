@@ -15,19 +15,19 @@ func TestParseCommand(t *testing.T) {
 	}
 	var tests = []testcase{
 		{
-			in:      `\roster "0 0 9 * *", "this is the message", @user1, @user2 `,
+			in:      `\roster add "0 0 9 * *", "this is the message", @user1, @user2 `,
 			message: "this is the message",
 			users:   []string{"@user1", "@user2"},
 			time:    "0 0 9 * *",
 		},
 		{
-			in:      `\roster "0 0 9 * *" "this is the message", @user1,@user2 `,
+			in:      `\roster add "0 0 9 * *" "this is the message", @user1,@user2 `,
 			message: "this is the message",
 			users:   []string{"@user1", "@user2"},
 			time:    "0 0 9 * *",
 		},
 		{
-			in:      `\roster "0 0 9 * *" "this is the message", @user1,@user2 `,
+			in:      `\roster add "0 0 9 * *" "this is the message", @user1,@user2 `,
 			message: "this is the message",
 			users:   []string{"@user1", "@user2"},
 			time:    "0 0 9 * *",
