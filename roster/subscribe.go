@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"math/rand"
 	"strconv"
-	"strings"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/joshcarp/rosterbot/command"
