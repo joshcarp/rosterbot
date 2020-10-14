@@ -34,13 +34,9 @@ func (s Server) Respond(ctx context.Context, contents []byte) error {
 		s.Client,
 		&slack.WebhookMessage{
 			Username: secret.BotUserID,
-			Text:     payload.Message,
+			Text:     message,
 		}); err != nil {
 		return err
 	}
 	return nil
-}
-
-func respond(){
-
 }
