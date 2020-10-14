@@ -13,7 +13,7 @@ import (
 )
 
 func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand) (*pubsub.Subscription, error) {
-	rosterbotCommand, err := command.ParseCommand(strings.ReplaceAll(cmd.Text, "add", ""))
+	rosterbotCommand, err := command.ParseCommand(cmd.Text)
 	if err != nil {
 		return nil, err
 	}
