@@ -2,9 +2,9 @@ package cron
 
 import (
 	"fmt"
-	"testing"
-
 	"github.com/stretchr/testify/require"
+	"testing"
+	"time"
 )
 
 func TestParseCommand(t *testing.T) {
@@ -28,4 +28,14 @@ func TestParseCommand(t *testing.T) {
 }
 func TestWhatever(t *testing.T) {
 	fmt.Println(Now().Map())
+}
+
+func TestCron(t *testing.T){
+	c, _ := Parse("* * * * *")
+	a := c.Steps(time.Now(), time.Now().Add(time.Hour))
+	require.Equal(t, 60, a)
+
+	c, _ = Parse("0 * * * *")
+	a = c.Steps(time.Now(), time.Now().Add(time.Hour*24))
+	require.Equal(t, 24, a)
 }
