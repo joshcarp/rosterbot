@@ -2,41 +2,44 @@ package roster
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/joshcarp/rosterbot/command"
 	"time"
 
-	"github.com/joshcarp/rosterbot/command"
-	"github.com/joshcarp/rosterbot/secrets"
+	"github.com/joshcarp/rosterbot/cron"
+
 	"github.com/slack-go/slack"
 )
 
-func (s Server) Respond(ctx context.Context, contents []byte) error {
-	payload := command.RosterPayload{}
-	if err := payload.FromJson(contents); err != nil {
-		return err
+func (s Server) Respond(ctx context.Context, time2 time.Time) error {
+	c := cron.Time(time2)
+	iter := s.Firebase.Collection("subscriptions").Where("Time/Minute", "==", c.Minute).Documents(ctx)
+	docs, _ := iter.GetAll()
+	for _, doc := range docs{
+		var payload command.RosterPayload
+		doc.DataTo(&payload)
+		webhookDoc := s.Firebase.Collection("webhooks").Doc(payload.TeamID+"-"+payload.ChannelID)
+		if webhookDoc == nil{
+			return fmt.Errorf("Channel not authorized")
+		}
+		snap, err := webhookDoc.Get(ctx)
+		if err != nil{
+			return err
+		}
+		var webhook slack.OAuthV2Response
+		snap.DataTo(&webhook)
+		message := payload.Message
+		if len(payload.Users) > 0{
+			message += " "+ payload.Users[payload.Time.Steps(payload.StartTime, time.Now())%len(payload.Users)]
+		}
+		go slack.PostWebhookCustomHTTPContext(
+			ctx,
+			webhook.IncomingWebhook.URL,
+			s.Client,
+			&slack.WebhookMessage{
+				Text:     message,
+			})
 	}
-	b, err := secrets.GetSecretData(payload.TeamID + "-" + payload.ChannelID)
-	if err != nil {
-		return fmt.Errorf("Error getting secret data %w", err)
-	}
-	var secret slack.OAuthV2Response
-	if err := json.Unmarshal(b, &secret); err != nil {
-		return err
-	}
-	message := payload.Message
-	if len(payload.Users) > 0{
-		message += " "+ payload.Users[payload.Time.Steps(payload.StartTime, time.Now())%len(payload.Users)]
-	}
-	if err := slack.PostWebhookCustomHTTPContext(
-		ctx,
-		secret.IncomingWebhook.URL,
-		s.Client,
-		&slack.WebhookMessage{
-			Username: secret.BotUserID,
-			Text:     message,
-		}); err != nil {
-		return err
-	}
+
 	return nil
 }
