@@ -27,12 +27,14 @@ func MainCommand(s string) string {
 func ParseCommand(cmd string) (Command, error) {
 	var (
 		ret       = Command{Users: []string{}, StartTime: time.Now()}
-		commandRe = regexp.MustCompile(`add "(?P<time>.*?)"\s*,?\s*"(?P<message>.*?)",?\s*(?P<users>.+)`)
+		commandRe = regexp.MustCompile(`add ("|“|”)(?P<time>.*?)("|“|”)\s*,?\s*("|“)(?P<message>.*?)("|“|”),?\s*(?P<users>.+)`)
+		matched = false
 	)
 	for _, match := range commandRe.FindAllStringSubmatch(cmd, -1) {
 		if match == nil {
 			continue
 		}
+		matched = true
 		for i, name := range commandRe.SubexpNames() {
 			if match[i] != "" {
 				switch name {
@@ -50,8 +52,8 @@ func ParseCommand(cmd string) (Command, error) {
 			}
 		}
 	}
-	if len(ret.Users) == 0 {
-		return ret, fmt.Errorf("Invalid Command: %s", cmd)
+	if !matched{
+		return ret, fmt.Errorf("Error parsing command")
 	}
 	return ret, nil
 }
