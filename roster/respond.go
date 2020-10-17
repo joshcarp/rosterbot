@@ -43,7 +43,7 @@ func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 		snap.DataTo(&webhook)
 		message := payload.Message
 		if len(payload.Users) > 0{
-			message += " "+ payload.Users[payload.Time.Steps(payload.StartTime, time.Now())%len(payload.Users)]
+			message += " "+ payload.Users[payload.Time.Steps(payload.StartTime, time.Now())%len(payload.Users)-1]
 		}
 		go slack.PostWebhookCustomHTTPContext(
 			ctx,
