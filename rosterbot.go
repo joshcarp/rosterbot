@@ -52,5 +52,5 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func server() roster.Server {
-	return roster.NewServer(os.Getenv("GCP_TOPIC"), os.Getenv("PUSH_URL"), os.Getenv("PROJECT_ID"), os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"))
+	return roster.NewServer(os.Getenv("PUSH_URL"), os.Getenv("PROJECT_ID"), os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"))
 }
