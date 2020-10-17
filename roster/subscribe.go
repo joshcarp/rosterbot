@@ -24,3 +24,5 @@ func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand) (command.
 	_, err = s.Firebase.Collection("subscriptions").Doc(payload.ChannelID+strconv.Itoa(rand.Int())).Set(ctx, payload)
 	return payload, payload.Time.Next(time.Now()), err
 }
+
+
