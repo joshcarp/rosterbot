@@ -9,7 +9,6 @@ import (
 
 type Server struct {
 	Client            *http.Client
-	Topic             string
 	PushURL           string
 	ProjectID         string
 	SlackClientID     string
@@ -17,11 +16,10 @@ type Server struct {
 	Firebase          *firestore.Client
 }
 
-func NewServer(topic, pushURL, projectID, slackClientID, slackClientSecret string) Server {
+func NewServer(pushURL, projectID, slackClientID, slackClientSecret string) Server {
 	firebase, _ := firestore.NewClient(context.Background(), projectID)
 	return Server{
 		Client:            http.DefaultClient,
-		Topic:             topic,
 		PushURL:           pushURL,
 		ProjectID:         projectID,
 		SlackClientID:     slackClientID,
