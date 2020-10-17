@@ -4,16 +4,29 @@ import (
 	"context"
 	"fmt"
 	"github.com/joshcarp/rosterbot/command"
-	"time"
-
 	"github.com/joshcarp/rosterbot/cron"
+	"time"
 
 	"github.com/slack-go/slack"
 )
+/*
+Day.Monday
+Day.Tuesday
+Day.Wednesday
+Day.Thursday
 
+*/
 func (s Server) Respond(ctx context.Context, time2 time.Time) error {
-	c := cron.Time(time2)
-	iter := s.Firebase.Collection("subscriptions").Where("Time/Minute", "==", c.Minute).Documents(ctx)
+	filters := cron.Expand(cron.Time(time2))
+	col := s.Firebase.Collection("subscriptions")
+	q := col.Query
+	for filter, val := range filters{
+		q = q.Where("Time.Complete."+filter, "==", val)
+	}
+	iter := q.Documents(ctx)
+	if iter == nil{
+		return nil
+	}
 	docs, _ := iter.GetAll()
 	for _, doc := range docs{
 		var payload command.RosterPayload

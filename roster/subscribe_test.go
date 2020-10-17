@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+func TestFilter2(t *testing.T) {
+
+	//server().Unsubscribe(cmd)
+}
+
 func TestFilter(t *testing.T) {
 	//cmd := slack.SlashCommand{
 	//	Token:          "asdasd",
@@ -11,18 +16,18 @@ func TestFilter(t *testing.T) {
 	//	TeamDomain:     "asdasd",
 	//	EnterpriseID:   "asdasd",
 	//	EnterpriseName: "asdasd",
-	//	ChannelID:      "aaaa",
-	//	ChannelName:    "foobar",
+	//	ChannelID:      "Foobar",
+	//	ChannelName:    "Blah_Blah",
 	//	UserID:         "asdasd",
 	//	UserName:       "asdasd",
 	//	Command:        "asdasd",
-	//	Text:           `add "9 * * * *" "THis is a message" @joshuacarpeggiani `,
+	//	Text:           `add "* * * * *" "THis is a message" @joshuacarpeggiani `,
 	//	ResponseURL:    "",
 	//	TriggerID:      "",
 	//}
 	//a, b,  c := server().Subscribe(context.Background(), cmd)
 	//fmt.Println(a, b, c)
-	//server().Unsubscribe(cmd)
+	//server().Respond(context.Background(), time.Now())
 }
 
 func server() Server {
