@@ -17,6 +17,7 @@ type Cron struct {
 	Dom    string
 	Month  string
 	Dow    string
+	Complete map[string]bool
 }
 
 func (c Cron) String() string {
@@ -60,9 +61,54 @@ func Parse(s string) (Cron, error) {
 			}
 		}
 	}
+	ret.Complete = Expand(ret)
 	return ret, nil
 }
 
+func Expand(c Cron)map[string]bool{
+	complete := make(map[string]bool)
+	switch c.Minute{
+	case "*":
+		for i := 0; i < 60; i ++{
+			complete["Minute:"+strconv.Itoa(i)] = true
+		}
+	default:
+		complete["Minute:"+c.Minute] = true
+	}
+	switch c.Hour{
+	case "*":
+		for i := 0; i < 24; i ++{
+			complete["Hour:"+strconv.Itoa(i)] = true
+		}
+	default:
+		complete["Hour:"+c.Hour] = true
+	}
+	switch c.Month{
+	case "*":
+		for i := 1; i < 13; i ++{
+			complete["Month:"+strconv.Itoa(i)] = true
+		}
+	default:
+		complete["Month:"+c.Month] = true
+	}
+	switch c.Dom{
+	case "*":
+		for i := 0; i < 32; i ++{
+			complete["Dom:"+strconv.Itoa(i)] = true
+		}
+	default:
+		complete["Dom:"+c.Dom] = true
+	}
+	switch c.Dow	{
+	case "*":
+		for i := 1; i < 8; i ++{
+			complete["Dow:"+strconv.Itoa(i)] = true
+		}
+	default:
+		complete["Dow:"+c.Dow] = true
+	}
+	return complete
+}
 func Now() Cron {
 	return Time(time.Now())
 }
