@@ -34,7 +34,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 		_, time, err := server().Subscribe(context.Background(), cmd)
 		if err != nil {
 			log.Println(err)
-			w.Write([]byte("Error adding roster"))
+			w.Write([]byte(err.Error()))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
