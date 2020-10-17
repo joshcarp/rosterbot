@@ -64,7 +64,10 @@ func Parse(s string) (Cron, error) {
 }
 
 func Now() Cron {
-	t := time.Now()
+	return Time(time.Now())
+}
+
+func Time(t time.Time) Cron {
 	t.Hour()
 	_, month, day := t.Date()
 	return Cron{

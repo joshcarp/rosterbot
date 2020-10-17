@@ -2,9 +2,6 @@ package roster
 
 import (
 	"context"
-	"encoding/json"
-
-	"github.com/joshcarp/rosterbot/secrets"
 	"github.com/slack-go/slack"
 )
 
@@ -19,9 +16,5 @@ func (s Server) Enroll(ctx context.Context, code string) error {
 	if err != nil {
 		return err
 	}
-	a, err := json.Marshal(accessToken)
-	if err != nil {
-		return err
-	}
-	return secrets.CreateSecret(accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, a)
+	return s.CreateSecret(accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, accessToken)
 }
