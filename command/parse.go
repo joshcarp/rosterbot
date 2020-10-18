@@ -27,7 +27,7 @@ func MainCommand(s string) string {
 func ParseCommand(cmd string) (Command, error) {
 	var (
 		ret       = Command{Users: []string{}, StartTime: time.Now()}
-		commandRe = regexp.MustCompile(`add ("|“|”)(?P<time>.*?)("|“|”)\s*,?\s*("|“)(?P<message>.*?)("|“|”),?\s*(?P<users>.+)`)
+		commandRe = regexp.MustCompile(`add ("|“|”)(?P<time>.*?)("|“|”)\s*,?\s*("|“)(?P<message>.*?)("|“|”),?\s*(?P<users>(?s).*)`)
 		matched = false
 	)
 	for _, match := range commandRe.FindAllStringSubmatch(cmd, -1) {
@@ -61,6 +61,7 @@ func ParseCommand(cmd string) (Command, error) {
 func ParseUsers(s string) []string {
 	var ret = []string{}
 	withoutcommas := strings.ReplaceAll(s, " ", ",")
+	withoutcommas = strings.ReplaceAll(withoutcommas, "\n", ",")
 	for _, user := range strings.Split(withoutcommas, ",") {
 		if user != "" {
 			ret = append(ret, user)
