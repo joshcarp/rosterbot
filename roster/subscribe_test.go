@@ -31,6 +31,6 @@ func TestFilter(t *testing.T) {
 }
 
 func server() Server {
-	return NewServer("https://us-central1-joshcarp-installer.cloudfunctions.net/respond", "joshcarp-installer", "asdasd", "asdasd")
+	return NewServer("", "joshcarp-installer", "", "")
 }
 
