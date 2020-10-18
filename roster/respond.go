@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/joshcarp/rosterbot/command"
 	"github.com/joshcarp/rosterbot/cron"
+	"sync"
 	"time"
 
 	"github.com/slack-go/slack"
@@ -17,6 +18,7 @@ Day.Thursday
 
 */
 func (s Server) Respond(ctx context.Context, time2 time.Time) error {
+	var wg sync.WaitGroup
 	filters := cron.Expand(cron.Time(time2))
 	col := s.Firebase.Collection("subscriptions")
 	q := col.Query
@@ -45,14 +47,18 @@ func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 		if len(payload.Users) > 0{
 			message += " "+ payload.Users[(payload.Time.Steps(payload.StartTime, time.Now())-1)%(len(payload.Users))]
 		}
-		go slack.PostWebhookCustomHTTPContext(
+		wg.Add(1)
+		go func (){slack.PostWebhookCustomHTTPContext(
 			ctx,
 			webhook.IncomingWebhook.URL,
 			s.Client,
 			&slack.WebhookMessage{
 				Text:     message,
 			})
-	}
+		wg.Done()
+		}()
 
+	}
+	wg.Wait()
 	return nil
 }
