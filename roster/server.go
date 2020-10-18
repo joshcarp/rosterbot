@@ -17,7 +17,10 @@ type Server struct {
 }
 
 func NewServer(pushURL, projectID, slackClientID, slackClientSecret string) Server {
-	firebase, _ := firestore.NewClient(context.Background(), projectID)
+	firebase, err := firestore.NewClient(context.Background(), projectID)
+	if err != nil{
+		panic(err)
+	}
 	return Server{
 		Client:            http.DefaultClient,
 		PushURL:           pushURL,
