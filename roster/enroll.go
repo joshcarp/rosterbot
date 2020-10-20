@@ -5,7 +5,7 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func (s Server) Enroll(ctx context.Context, code string) error {
+func (s Server) Enroll(ctx context.Context, code string) (*slack.OAuthV2Response, error) {
 	accessToken, err := slack.GetOAuthV2ResponseContext(
 		ctx,
 		s.Client,
@@ -14,7 +14,7 @@ func (s Server) Enroll(ctx context.Context, code string) error {
 		code,
 		"")
 	if err != nil {
-		return err
+		return accessToken, err
 	}
-	return s.CreateSecret(accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, accessToken)
+	return accessToken, s.CreateSecret(accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, accessToken)
 }

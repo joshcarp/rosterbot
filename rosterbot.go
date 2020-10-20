@@ -22,9 +22,11 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Enroll(w http.ResponseWriter, r *http.Request) {
-	if err := server().Enroll(context.Background(), r.URL.Query().Get("code")); err != nil {
+	auth, err := server().Enroll(context.Background(), r.URL.Query().Get("code"));
+	if  err != nil {
 		log.Println(err)
 	}
+	w.Write([]byte("Rosterbot installed on "+auth.Team.Name))
 }
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
