@@ -22,11 +22,12 @@ func RespondHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Enroll(w http.ResponseWriter, r *http.Request) {
-	auth, err := server().Enroll(context.Background(), r.URL.Query().Get("code"));
-	if  err != nil {
+	auth, err := server().Enroll(context.Background(), r.URL.Query().Get("code"))
+	if err != nil {
 		log.Println(err)
+		return
 	}
-	w.Write([]byte("Rosterbot installed on "+auth.IncomingWebhook.Channel))
+	w.Write([]byte("Rosterbot installed on " + auth.IncomingWebhook.Channel))
 }
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
