@@ -38,6 +38,36 @@ func TestParseCommand(t *testing.T) {
 			time:    "* 9 * * *",
 			users:   []string{"@joshuacarpeggiani"},
 		},
+		{
+			in: `/roster add “* * * * *” “message“ 
+ <@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> 
+{skip} {skip}
+<@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> <@U1234|user> <#C1234|general> 
+{skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user>
+ {skip} {skip}
+<@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user>
+ {skip} {skip}
+<@U1234|user>  <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
+ {skip} {skip}` ,
+			message: "This should execute at 7pm",
+			time:    "* 9 * * *",
+			users:   []string{"@joshuacarpeggiani"},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
@@ -48,5 +78,9 @@ func TestParseCommand(t *testing.T) {
 			require.Equal(t, test.message, command.Message)
 		})
 	}
+
+}
+
+func TestParseUsers(t *testing.T) {
 
 }
