@@ -26,7 +26,7 @@ func Enroll(w http.ResponseWriter, r *http.Request) {
 	if  err != nil {
 		log.Println(err)
 	}
-	w.Write([]byte("Rosterbot installed on "+auth.Team.Name))
+	w.Write([]byte("Rosterbot installed on "+auth.IncomingWebhook.Channel))
 }
 
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
