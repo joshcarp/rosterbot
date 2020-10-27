@@ -30,6 +30,6 @@ func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand, starttime
 	if err != nil {
 		return "", notsubscribederror
 	}
-	err = s.Database.Set("subscription", payload.ID, payload)
+	err = s.Database.Set("subscriptions", payload.ID, payload)
 	return fmt.Sprintf("Roster added, first execution: %v", payload.Time.Next(starttime)), err
 }
