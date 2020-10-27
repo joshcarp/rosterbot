@@ -5,18 +5,16 @@
 </html>
 
 - A slack app for rostering
-## Goal
+
+## Use
+
+- Roster a message every day at 23:00 UTC
 ```
-/roster day 9:00am @joshcarp @whatever @foobar 
+/roster add "0 23 * * *" "message" @user1 @user2 @user3 
+
 ```
 
-- Sub commands
-    - time interval:
-        - month
-            - week
-                - day
-                    - time
-    - message: "Todays on call person is"
-    - target:
-        - @user, @usergroup, @channel
-
+- Remove rosters for current channel 
+```
+/roster remove
+```
