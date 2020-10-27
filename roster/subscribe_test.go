@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"testing"
 	"time"
 
@@ -20,42 +21,97 @@ type testcase struct {
 	text      string
 	teamid    string
 	channelid string
+	starttime string
 	message   map[string]string
 }
 
 var tests = []testcase{
-
 	{
 		text:      `add "* * * * *" "message" @user1`,
 		teamid:    "team1",
 		channelid: "channel1",
-		message: map[string]string{"3:04PM":"message @user1"},
+		starttime: "3:04PM",
+		message:   map[string]string{"3:04PM": "message @user1"},
+	},
+	{
+		text:      `add "* * * * *" "message" @user1 @user2 @user3`,
+		teamid:    "team1",
+		channelid: "channel1",
+		starttime: "3:03PM",
+		message: map[string]string{
+			"3:04PM": "message @user1",
+			"3:05PM": "message @user2",
+			"3:06PM": "message @user3",
+		},
+	},
+	{
+		text:      `add "0 * * * *" "message" @user1 @user2 @user3`,
+		teamid:    "team1",
+		channelid: "channel1",
+		starttime: "2:30PM",
+		message: map[string]string{
+			"3:00PM": "message @user1",
+			"4:00PM": "message @user2",
+			"5:00PM": "message @user3",
+		},
+	},
+	{
+		text: `add "0 * * * *" "This is a long complex message" <@id1|user1> <@id1|user1> <@id1|user1> <@id1|user1> <@id1|user1>
+{skip} {skip} 
+<@id2|user2> <@id2|user2> <@id2|user2> <@id2|user2> <@id2|user2>
+{skip} {skip}
+<@id3|user3> <@id3|user3> <@id3|user3> <@id3|user3> <@id3|user3>`,
+		teamid:    "team1",
+		channelid: "channel1",
+		starttime: "12:01AM",
+		message: map[string]string{
+			"1:00AM":  "This is a long complex message <@id1|user1>",
+			"2:00AM":  "This is a long complex message <@id1|user1>",
+			"3:00AM":  "This is a long complex message <@id1|user1>",
+			"4:00AM":  "This is a long complex message <@id1|user1>",
+			"5:00AM":  "This is a long complex message <@id1|user1>",
+			"6:00AM":  "This is a long complex message {skip}",
+			"7:00AM":  "This is a long complex message {skip}",
+			"8:00AM":  "This is a long complex message <@id2|user2>",
+			"9:00AM":  "This is a long complex message <@id2|user2>",
+			"10:00AM": "This is a long complex message <@id2|user2>",
+			"11:00AM": "This is a long complex message <@id2|user2>",
+			"12:00PM": "This is a long complex message <@id2|user2>",
+			"1:00PM":  "This is a long complex message {skip}",
+			"2:00PM":  "This is a long complex message {skip}",
+			"3:00PM":  "This is a long complex message <@id3|user3>",
+			"4:00PM":  "This is a long complex message <@id3|user3>",
+			"5:00PM":  "This is a long complex message <@id3|user3>",
+			"6:00PM":  "This is a long complex message <@id3|user3>",
+			"7:00PM":  "This is a long complex message <@id3|user3>",
+		},
 	},
 }
 
 func TestFilter(t *testing.T) {
-	for _, test := range tests {
-		ctx := context.Background()
-		cmd := slack.SlashCommand{
-			TeamID:    test.teamid,
-			ChannelID: test.channelid,
-			Text:      test.text,
-		}
-		s, client := NewMockServer(test)
-		_, err := s.Enroll(ctx, "")
-		require.NoError(t, err)
-		_, _, err = s.Subscribe(ctx, cmd)
-		require.NoError(t, err)
-
-		for timestr, message := range test.message{
-			t1, err := time.Parse(time.Kitchen, timestr)
+	for i, test := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			ctx := context.Background()
+			cmd := slack.SlashCommand{
+				TeamID:    test.teamid,
+				ChannelID: test.channelid,
+				Text:      test.text,
+			}
+			s, client := NewMockServer(test)
+			_, err := s.Enroll(ctx, "")
 			require.NoError(t, err)
-			err = s.Respond(ctx, t1)
+			t1, err := time.Parse(time.Kitchen, test.starttime)
+			_, err = s.Subscribe(ctx, cmd, t1)
 			require.NoError(t, err)
-			require.Equal(t, message, client.message)
-		}
+			for timestr, message := range test.message {
+				t1, err := time.Parse(time.Kitchen, timestr)
+				require.NoError(t, err)
+				err = s.Respond(ctx, t1)
+				require.NoError(t, err)
+				require.Equal(t, message, client.message.Text)
+			}
+		})
 	}
-
 }
 
 func NewMockServer(test testcase) (Server, *testSlackClient) {
@@ -75,7 +131,7 @@ func server(client HttpClient) (Server, error) {
 	if err != nil {
 		return Server{}, err
 	}
-	return NewServer("", "foobar", "", a, client), nil
+	return NewServer("", "", a, client), nil
 }
 
 type testSlackClient struct {

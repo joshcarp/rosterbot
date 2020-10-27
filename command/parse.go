@@ -4,13 +4,10 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"time"
-
 	"github.com/joshcarp/rosterbot/cron"
 )
 
 type Command struct {
-	StartTime time.Time
 	Time      cron.Cron
 	Message   string
 	Users     []string
@@ -26,7 +23,7 @@ func MainCommand(s string) string {
 
 func ParseCommand(cmd string) (Command, error) {
 	var (
-		ret       = Command{Users: []string{}, StartTime: time.Now()}
+		ret       = Command{Users: []string{}}
 		commandRe = regexp.MustCompile(`add ("|“|”)(?P<time>.*?)("|“|”)\s*,?\s*("|“)(?P<message>.*?)("|“|”),?\s*(?P<users>(?s).*)`)
 		matched = false
 	)

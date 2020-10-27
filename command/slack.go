@@ -12,21 +12,14 @@ type RosterPayload struct {
 	ChannelID string
 	Token     string
 	TeamID    string
-}
-
-func (r RosterPayload) ToMap() map[string]string {
-	return map[string]string{
-		"channel":   r.ChannelID,
-		"starttime": r.Command.StartTime.String(),
-		"message":   r.Command.Message,
-		"users":     strings.Join(r.Command.Users, ", "),
-	}
+	StartTime time.Time
 }
 
 func (r RosterPayload) ToJson() []byte {
 	b, _ := json.Marshal(&r)
 	return b
 }
+
 func (r *RosterPayload) FromJson(b []byte) error {
 	return json.Unmarshal(b, r)
 }

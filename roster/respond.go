@@ -5,11 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/joshcarp/rosterbot/cron"
 
@@ -26,18 +27,22 @@ Day.Thursday
 func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 	var wg sync.WaitGroup
 	filters := cron.Expand(cron.Time(time2))
-	a, err := s.Database.Filter("subscriptions", "==",filters)
-	if err != nil{
+	a, err := s.Database.Filter("subscriptions", "==", filters)
+	if err != nil {
 		return err
 	}
-	for _, sub := range a{
+	for _, sub := range a {
 		webhook, err := s.GetSecret(sub.TeamID + "-" + sub.ChannelID)
 		if err != nil {
 			continue
 		}
 		message := sub.Message
 		if len(sub.Users) > 0 {
-			message += " " + sub.Users[(sub.Time.Steps(sub.StartTime, time.Now())-1)%(len(sub.Users))]
+			steps := sub.Time.Steps(sub.StartTime, time2) - 1
+			if steps < 0 {
+				steps++
+			}
+			message += " " + sub.Users[steps%len(sub.Users)]
 		}
 		wg.Add(1)
 		go func() {
@@ -55,7 +60,6 @@ func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 	wg.Wait()
 	return nil
 }
-
 
 func PostWebhookCustomHTTPContext(ctx context.Context, url string, httpClient HttpClient, msg *slack.WebhookMessage) error {
 	raw, err := json.Marshal(msg)

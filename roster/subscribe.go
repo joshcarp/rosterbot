@@ -11,23 +11,25 @@ import (
 	"github.com/slack-go/slack"
 )
 
-var notsubscribederror = fmt.Errorf("error subscribing: This channel is not authorized, to install visit https://slack.com/oauth/v2/authorize?client_id=1367393582980.1445120201280&scope=commands,incoming-webhook&user_scope=")
+var notsubscribederror = fmt.Errorf("This channel is not authorized, to install visit https://slack.com/oauth/v2/authorize?client_id=1367393582980.1445120201280&scope=commands,incoming-webhook&user_scope=")
 
-func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand) (command.RosterPayload, time.Time, error) {
+func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand, starttime time.Time) (string, error) {
 	rosterbotCommand, err := command.ParseCommand(cmd.Text)
 	if err != nil {
-		return command.RosterPayload{}, time.Time{}, err
+		return "", err
 	}
 	payload := command.RosterPayload{
-		ID: cmd.ChannelID+strconv.Itoa(rand.Int()),
-		Command: rosterbotCommand,
+		ID:        cmd.ChannelID + strconv.Itoa(rand.Int()),
+		Command:   rosterbotCommand,
 		ChannelID: cmd.ChannelID,
-		Token: cmd.Token,
-		TeamID: cmd.TeamID}
+		Token:     cmd.Token,
+		TeamID:    cmd.TeamID,
+		StartTime: starttime,
+	}
 	_, err = s.GetSecret(payload.TeamID + "-" + payload.ChannelID)
 	if err != nil {
-		return payload, time.Now(), notsubscribederror
+		return "", notsubscribederror
 	}
 	err = s.Database.Set("subscription", payload.ID, payload)
-	return payload, payload.Time.Next(time.Now()), err
+	return fmt.Sprintf("Roster added, first execution: %v", payload.Time.Next(starttime)), err
 }
