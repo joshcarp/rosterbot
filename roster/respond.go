@@ -27,7 +27,7 @@ Day.Thursday
 func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 	var wg sync.WaitGroup
 	filters := cron.Expand(cron.Time(time2))
-	a, err := s.Database.Filter("subscriptions", "==", filters)
+	a, err := s.Database.Filter("subscriptions", "==", "Time.Complete.", filters)
 	if err != nil {
 		return err
 	}

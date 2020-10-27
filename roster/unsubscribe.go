@@ -7,7 +7,7 @@ import (
 )
 
 func (s Server) Unsubscribe(cmd slack.SlashCommand) (string, error) {
-	cols, err := s.Database.Filter("subscriptions", "==", map[string]interface{}{"ChannelID": cmd.ChannelID, "TeamID": cmd.TeamID})
+	cols, err := s.Database.Filter("subscriptions", "==", "", map[string]interface{}{"ChannelID": cmd.ChannelID, "TeamID": cmd.TeamID})
 	if err != nil {
 		return "", err
 	}

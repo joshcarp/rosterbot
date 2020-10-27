@@ -33,11 +33,11 @@ func (f Firestore) Set(collection, name string, i interface{}) error {
 	return err
 }
 
-func (f Firestore) Filter(collection string, op string, filters map[string]interface{}) ([]command.RosterPayload, error) {
+func (f Firestore) Filter(collection string, op, prefix string, filters map[string]interface{}) ([]command.RosterPayload, error) {
 	col := f.Collection(collection)
 	q := col.Query
 	for filter, val := range filters {
-		q = q.Where("Time.Complete."+filter, op, val)
+		q = q.Where(prefix+filter, op, val)
 	}
 	iter := q.Documents(context.Background())
 	if iter == nil {
