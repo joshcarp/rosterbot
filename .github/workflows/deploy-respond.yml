@@ -16,7 +16,7 @@ jobs:
           service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           export_default_credentials: true
       - name: Set default project
-        run: gcloud config set core/project slack-rosterbot
+        run: gcloud config set core/project "slack-rosterbot"
       - name: Deploy
         run: |
           gcloud functions deploy respond \
