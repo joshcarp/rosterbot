@@ -1,12 +1,16 @@
 package roster
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
+	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
-	"github.com/joshcarp/rosterbot/command"
 	"github.com/joshcarp/rosterbot/cron"
 
 	"github.com/slack-go/slack"
@@ -22,36 +26,22 @@ Day.Thursday
 func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 	var wg sync.WaitGroup
 	filters := cron.Expand(cron.Time(time2))
-	col := s.Firebase.Collection("subscriptions")
-	q := col.Query
-	for filter, val := range filters {
-		q = q.Where("Time.Complete."+filter, "==", val)
+	a, err := s.Database.Filter("subscriptions", "==",filters)
+	if err != nil{
+		return err
 	}
-	iter := q.Documents(ctx)
-	if iter == nil {
-		return nil
-	}
-	docs, _ := iter.GetAll()
-	for _, doc := range docs {
-		var payload command.RosterPayload
-		doc.DataTo(&payload)
-		webhookDoc := s.Firebase.Collection("webhooks").Doc(payload.TeamID + "-" + payload.ChannelID)
-		if webhookDoc == nil {
-			return fmt.Errorf("Channel not authorized")
-		}
-		snap, err := webhookDoc.Get(ctx)
+	for _, sub := range a{
+		webhook, err := s.GetSecret(sub.TeamID + "-" + sub.ChannelID)
 		if err != nil {
-			return err
+			continue
 		}
-		var webhook slack.OAuthV2Response
-		snap.DataTo(&webhook)
-		message := payload.Message
-		if len(payload.Users) > 0 {
-			message += " " + payload.Users[(payload.Time.Steps(payload.StartTime, time.Now())-1)%(len(payload.Users))]
+		message := sub.Message
+		if len(sub.Users) > 0 {
+			message += " " + sub.Users[(sub.Time.Steps(sub.StartTime, time.Now())-1)%(len(sub.Users))]
 		}
 		wg.Add(1)
 		go func() {
-			slack.PostWebhookCustomHTTPContext(
+			PostWebhookCustomHTTPContext(
 				ctx,
 				webhook.IncomingWebhook.URL,
 				s.Client,
@@ -63,5 +53,44 @@ func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 
 	}
 	wg.Wait()
+	return nil
+}
+
+
+func PostWebhookCustomHTTPContext(ctx context.Context, url string, httpClient HttpClient, msg *slack.WebhookMessage) error {
+	raw, err := json.Marshal(msg)
+	if err != nil {
+		return errors.Wrap(err, "marshal failed")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(raw))
+	if err != nil {
+		return errors.Wrap(err, "failed new request")
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "failed to post webhook")
+	}
+	defer resp.Body.Close()
+
+	return checkStatusCode(resp)
+}
+
+func checkStatusCode(resp *http.Response) error {
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retry, err := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+		if err != nil {
+			return err
+		}
+		return &slack.RateLimitedError{time.Duration(retry) * time.Second}
+	}
+
+	// Slack seems to send an HTML body along with 5xx error codes. Don't parse it.
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%d: %s", resp.StatusCode, resp.Status)
+	}
+
 	return nil
 }

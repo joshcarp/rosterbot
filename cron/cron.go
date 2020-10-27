@@ -17,7 +17,7 @@ type Cron struct {
 	Dom    string
 	Month  string
 	Dow    string
-	Complete map[string]bool
+	Complete map[string]interface{}
 }
 
 func (c Cron) String() string {
@@ -65,8 +65,8 @@ func Parse(s string) (Cron, error) {
 	return ret, nil
 }
 
-func Expand(c Cron)map[string]bool{
-	complete := make(map[string]bool)
+func Expand(c Cron)map[string]interface{}{
+	complete := make(map[string]interface{})
 	switch c.Minute{
 	case "*":
 		for i := 0; i < 60; i ++{

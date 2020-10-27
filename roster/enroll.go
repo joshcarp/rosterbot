@@ -16,5 +16,5 @@ func (s Server) Enroll(ctx context.Context, code string) (*slack.OAuthV2Response
 	if err != nil {
 		return accessToken, err
 	}
-	return accessToken, s.CreateSecret(accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, accessToken)
+	return accessToken, s.Database.Set("webhooks", accessToken.Team.ID+"-"+accessToken.IncomingWebhook.ChannelID, accessToken)
 }
