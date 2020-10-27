@@ -16,14 +16,14 @@ jobs:
           service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           export_default_credentials: true
       - name: Set default project
-        run: gcloud config set core/project joshcarp-installer
+        run: gcloud config set core/project slack-rosterbot
       - name: Deploy
         run: |
           gcloud functions deploy enroll \
                  --entry-point=Enroll \
                  --runtime=go113 \
                  --trigger-http \
-                 --set-env-vars=GCP_TOPIC=slack,PROJECT_ID=joshcarp-installer,SLACK_CLIENT_ID=${{secrets.SLACK_CLIENT_ID}},SLACK_CLIENT_SECRET=${{secrets.SLACK_CLIENT_SECRET}}\
+                 --set-env-vars=PROJECT_ID=slack-rosterbot,SLACK_CLIENT_ID=${{secrets.SLACK_CLIENT_ID}},SLACK_CLIENT_SECRET=${{secrets.SLACK_CLIENT_SECRET}}\
                  --allow-unauthenticated
       - name: Set permissions
         run: |-
