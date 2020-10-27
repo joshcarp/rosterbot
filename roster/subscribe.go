@@ -18,15 +18,16 @@ func (s Server) Subscribe(ctx context.Context, cmd slack.SlashCommand) (command.
 	if err != nil {
 		return command.RosterPayload{}, time.Time{}, err
 	}
-	payload := command.RosterPayload{Command: rosterbotCommand, ChannelID: cmd.ChannelID, Token: cmd.Token, TeamID: cmd.TeamID}
-	webhookDoc := s.Firebase.Collection("webhooks").Doc(payload.TeamID + "-" + payload.ChannelID)
-	a, err := webhookDoc.Get(ctx)
+	payload := command.RosterPayload{
+		ID: cmd.ChannelID+strconv.Itoa(rand.Int()),
+		Command: rosterbotCommand,
+		ChannelID: cmd.ChannelID,
+		Token: cmd.Token,
+		TeamID: cmd.TeamID}
+	_, err = s.GetSecret(payload.TeamID + "-" + payload.ChannelID)
 	if err != nil {
 		return payload, time.Now(), notsubscribederror
 	}
-	if a.Data() == nil {
-		return payload, time.Now(), notsubscribederror
-	}
-	_, err = s.Firebase.Collection("subscriptions").Doc(payload.ChannelID+strconv.Itoa(rand.Int())).Set(ctx, payload)
+	err = s.Database.Set("subscription", payload.ID, payload)
 	return payload, payload.Time.Next(time.Now()), err
 }

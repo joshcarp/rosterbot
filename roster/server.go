@@ -1,32 +1,29 @@
 package roster
 
 import (
-	"context"
 	"net/http"
 
-	"cloud.google.com/go/firestore"
+	"github.com/joshcarp/rosterbot/database"
 )
 
 type Server struct {
-	Client            *http.Client
+	Client            HttpClient
 	PushURL           string
-	ProjectID         string
 	SlackClientID     string
 	SlackClientSecret string
-	Firebase          *firestore.Client
+	Database          database.Database
 }
 
-func NewServer(pushURL, projectID, slackClientID, slackClientSecret string) Server {
-	firebase, err := firestore.NewClient(context.Background(), projectID)
-	if err != nil{
-		panic(err)
-	}
+func NewServer(pushURL, slackClientID, slackClientSecret string, db database.Database, client HttpClient) Server {
 	return Server{
-		Client:            http.DefaultClient,
+		Client:            client,
 		PushURL:           pushURL,
-		ProjectID:         projectID,
 		SlackClientID:     slackClientID,
 		SlackClientSecret: slackClientSecret,
-		Firebase:          firebase,
+		Database:          db,
 	}
+}
+
+type HttpClient interface {
+	Do(*http.Request) (*http.Response, error)
 }

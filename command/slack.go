@@ -7,6 +7,7 @@ import (
 )
 
 type RosterPayload struct {
+	ID string
 	Command
 	ChannelID string
 	Token     string

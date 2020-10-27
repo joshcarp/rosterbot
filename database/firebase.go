@@ -2,18 +2,21 @@ package database
 
 import (
 	"context"
+	"github.com/joshcarp/rosterbot/command"
 
 	"cloud.google.com/go/firestore"
 )
 
-type Database interface {
-	Get(collection, name string, i interface{}) error
-	Set(collection, name string, i interface{}) error
-	Filter(collection, name string) ([]byte, error)
+type Firestore struct {
+	*firestore.Client
 }
 
-type Firestore struct {
-	firestore.Client
+func NewFirestore(projectID string)(Firestore, error){
+	a, err := firestore.NewClient(context.Background(), projectID)
+	if err != nil{
+		return Firestore{}, err
+	}
+	return Firestore{Client: a}, nil
 }
 
 func (f Firestore) Get(collection, name string, i interface{}) error {
@@ -29,7 +32,7 @@ func (f Firestore) Set(collection, name string, i interface{}) error {
 	return err
 }
 
-func (f Firestore) Filter(collection string, op string, filters map[string]string) ([]*firestore.DocumentSnapshot, error) {
+func (f Firestore) Filter(collection string, op string, filters map[string]interface{}) ([]command.RosterPayload, error) {
 	col := f.Collection(collection)
 	q := col.Query
 	for filter, val := range filters {
@@ -39,5 +42,20 @@ func (f Firestore) Filter(collection string, op string, filters map[string]strin
 	if iter == nil {
 		return nil, nil
 	}
-	return iter.GetAll()
+	docs, err := iter.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	ret := make([]command.RosterPayload, 0, len(docs))
+	for _, b := range docs{
+		var payload command.RosterPayload
+		b.DataTo(&payload)
+		ret = append(ret, payload)
+	}
+	return ret, nil
+}
+
+func (f Firestore) Delete(collection, name string) (error){
+	_, err := f.Client.Collection(collection).Doc(name).Delete(context.Background())
+	return err
 }
