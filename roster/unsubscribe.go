@@ -13,7 +13,7 @@ func (s Server) Unsubscribe(cmd slack.SlashCommand) (string, error) {
 	}
 	unsubbed := 0
 	for _, sub := range cols {
-		if err := s.Database.Delete("subscriptions", sub.ID); err != nil {
+		if err := s.Database.Delete("subscriptions", sub.ID); err == nil {
 			unsubbed++
 		}
 	}
