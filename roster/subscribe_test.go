@@ -86,6 +86,33 @@ var tests = []testcase{
 			"7:00PM":  "This is a long complex message <@id3|user3>",
 		},
 	},
+	{
+		text:      `add "0 * * * *" "This is a long complex message" <@id1|user1>,<@id1|user1>,<@id1|user1>,<@id1|user1>,<@id1|user1>,{skip},{skip},<@id2|user2>,<@id2|user2>,<@id2|user2>,<@id2|user2>,<@id2|user2>,{skip},{skip},<@id3|user3>, <@id3|user3>,<@id3|user3>,<@id3|user3>,<@id3|user3>`,
+		teamid:    "team1",
+		channelid: "channel1",
+		starttime: "12:01AM",
+		message: map[string]string{
+			"1:00AM":  "This is a long complex message <@id1|user1>",
+			"2:00AM":  "This is a long complex message <@id1|user1>",
+			"3:00AM":  "This is a long complex message <@id1|user1>",
+			"4:00AM":  "This is a long complex message <@id1|user1>",
+			"5:00AM":  "This is a long complex message <@id1|user1>",
+			"6:00AM":  "This is a long complex message {skip}",
+			"7:00AM":  "This is a long complex message {skip}",
+			"8:00AM":  "This is a long complex message <@id2|user2>",
+			"9:00AM":  "This is a long complex message <@id2|user2>",
+			"10:00AM": "This is a long complex message <@id2|user2>",
+			"11:00AM": "This is a long complex message <@id2|user2>",
+			"12:00PM": "This is a long complex message <@id2|user2>",
+			"1:00PM":  "This is a long complex message {skip}",
+			"2:00PM":  "This is a long complex message {skip}",
+			"3:00PM":  "This is a long complex message <@id3|user3>",
+			"4:00PM":  "This is a long complex message <@id3|user3>",
+			"5:00PM":  "This is a long complex message <@id3|user3>",
+			"6:00PM":  "This is a long complex message <@id3|user3>",
+			"7:00PM":  "This is a long complex message <@id3|user3>",
+		},
+	},
 }
 
 func TestFilter(t *testing.T) {
