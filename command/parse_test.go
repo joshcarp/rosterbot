@@ -33,7 +33,7 @@ func TestParseCommand(t *testing.T) {
 			time:    "0 0 9 * *",
 		},
 		{
-			in: `/roster add "* 9 * * *" "This should execute at 7pm" @joshuacarpeggiani` ,
+			in:      `/roster add "* 9 * * *" "This should execute at 7pm" @joshuacarpeggiani`,
 			message: "This should execute at 7pm",
 			time:    "* 9 * * *",
 			users:   []string{"@joshuacarpeggiani"},
@@ -63,10 +63,10 @@ func TestParseCommand(t *testing.T) {
 <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user>
  {skip} {skip}
 <@U1234|user>  <@U1234|user> <@U1234|user> <@U1234|user> <@U1234|user> 
- {skip} {skip}` ,
-			message: "This should execute at 7pm",
-			time:    "* 9 * * *",
-			users:   []string{"@joshuacarpeggiani"},
+ {skip} {skip}`,
+			message: "message",
+			time:    "* * * * *",
+			users:   []string{"<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "{skip}", "{skip}", "<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "<@U1234|user>", "<#C1234|general>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "<@U1234|user>", "{skip}", "{skip}"},
 		},
 	}
 	for _, test := range tests {
