@@ -10,7 +10,7 @@
 
 - Roster a message every day at 23:00 UTC
 ```
-/roster add "0 23 * * *" "message" @user1 @user2 @user3 
+/roster add "0 23 * * *" "message" @user1, @user2, @user3 
 
 ```
 
@@ -18,3 +18,17 @@
 ```
 /roster remove
 ```
+## Caveats
+
+- Doesn't support full cron syntax:
+```
+* * * * * is supported
+0 /10 * * is not supported
+```
+
+- All time must be specified in UTC time, not local time
+
+## About
+- Hosted on google cloud functions
+- Firestore to store data (webhooks and subscriptions)
+- Uses google cloud scheduling to execute every minute (* * * * *) in order to filter out firestore subscriptions for that time
