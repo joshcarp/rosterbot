@@ -42,6 +42,9 @@ func (s Server) Respond(ctx context.Context, time2 time.Time) error {
 			if steps < 0 {
 				steps++
 			}
+			if sub.Users[steps%len(sub.Users)] == "{skip}" {
+				continue
+			}
 			message += " " + sub.Users[steps%len(sub.Users)]
 		}
 		wg.Add(1)
