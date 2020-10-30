@@ -11,8 +11,11 @@
 - Roster a message every day at 23:00 UTC
 ```
 /roster add "0 23 * * *" "message" @user1, @user2, @user3 
-
+// 23:00 UTC: message @user1
+// 23:00 Tomorrow: message @user2
+// 23:00 The day after tomorrow: message @user2
 ```
+
 
 - Remove rosters for current channel 
 ```
